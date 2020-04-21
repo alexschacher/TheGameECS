@@ -1,0 +1,41 @@
+
+	AI Brains have the following elements:
+
+	Needs: Survival, Community Survival, Job, Enjoyment, etc.
+	Heirarchy of Needs: Will tend to the highest order Need that requires attention: Survival > Community Survival > Job > Enjoyment
+		Needs may also have a variable percentage of satisfaction, and Weights can break the Heirarchy down to be more dynamic.
+		You may be at 80% survival with a weight of 100 but protecting a teammate is at 20% with a weight of 50.
+		Survival is at 80 x 100 = 8,000 points and Community Survival is at 20 x 50 = 1000 points, making Community Survival lower, and in more need of Satisfying.
+		This allows characters to be more Altruistic or Selfish, etc.
+	Requirements: Resources, states, and surroundings use to determine whether a Need is met, or how it can be met if it is not currently:
+		Food, Freedom from Danger, Killing enemies, Chopping wood, Relaxing by a garden, Talking to others, etc.
+		Requirements could be thought of as "meters" such as the meters in The Sims: Hunger, Enjoyment, Cleanliness, Fatigue, etc.
+	Methods: How an AI determines which capabilities to use in what way to meet Requirements
+	Capabilities: The physical capabilities that an AI has: Walking, Running, Attacking, Jumping, Talking, etc.
+	Availability: Whether or not requirements are possible for an AI to achieve at a given moment.
+		If a preferred method or need is not possible to satisfy, go to Plan B or satisfy the next Need if it makes sense to.
+
+	The AI takes these elements into consideration in order to determine their current Plan. Their Behavior flows from that Plan.
+
+	Loop through list of Needs in Heirarchy order, checking Requirements to calculate their score. The Need with the lowest score is attempted to be satisfied, if possible:
+	Loop through list of Methods to satisfy this Need in order and see if our Capabilities and Availability would allow us to use this Method to satisfy this Need. If not, Method B, Method C, etc.
+	This Method becomes the Plan. Their Behavior is an enactment of that Plan, using their Capabilities to carry out the Plan, and therefore the Method, and therefore satisfying that Need.
+
+	AI Behaviors = Plan = Method
+		Wander Aimlessly
+		Run to a Safer place
+		Attack an Enemy
+
+		Comp_AIControlsBehavior
+		Sys_AIChooseBehavior: Allows entities with Comp_AIControlsBehavior to add or remove Behavior Components
+
+		Comp_AIBehavior_Wander { float moveSpeedMod, float2 pauseTimeRange, float2 moveTimeRange }
+		Comp_AIBehavior_RunToSafety { float moveSpeedMod, float3 targetPos}
+		Comp_AIBehavior_Attack { float moveSpeedMod, Entity target }
+
+		Sys_AIBehavior_Wander
+		Sys_AIBehavior_RunToSafety
+		Sys_AIBehavior_Attack
+
+		Comp_AIDetectsThreat { float bravery, float detectedThreat }
+		Comp_Threatens	{ float threatValue }

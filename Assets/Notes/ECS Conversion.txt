@@ -1,0 +1,67 @@
+	
+	At the start, keep the backup project unchanged to have a solid base to go off of.
+	Work on the new project as a seperate thing.
+	Only make the "jump" once we feel comfortable in the new project.
+
+	Physics
+	[X] Make an Object exist in physic space
+	[ ] Make an Object Move
+	[ ] Make an Object collide with a wall
+
+
+
+	Simple Base to Aim for to build off of:
+
+	Terrain Blocks (Earth)
+	Editor Place/Destroy Blocks
+	Resources, Models, Textures, Materials
+
+	Characters & Player/AI Control
+	Sprites, Animation, and Billboarding
+	
+	
+
+
+
+
+
+
+
+	Old Project Summary:
+
+	Characters:
+		Sentience (Awareness of others system)
+		EntityScan
+		Player/AI Controller
+		AI Behaviors
+		ReactToForce (Pushback)
+		Attack
+		Walk
+		Jump
+
+	Misc:
+		MovementVectorCameraConverter
+		CameraController
+		FollowTarget
+		Physics Materials
+		ConsoleCommand
+		EditorPlaceObjects
+		Resource Loading
+		Startup Operations
+
+	Graphics:
+		Sprites
+		Billboarding
+		Animated Sprites
+		Models, Textures, and Materials
+		Animated UVs
+
+	World & Tiles
+		Block.cs (Terrain)
+		Tile Enum
+		WorldController
+		WorldDataContainer/Generator
+		WorldObjectContainer/Manager/Factory
+
+
+	

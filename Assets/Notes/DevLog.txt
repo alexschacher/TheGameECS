@@ -1,0 +1,116 @@
+
+	[ ] Define level system and be able to spawn entities from the level array
+	[ ] Figure out how to make an infinitely generated world with deterministic randomness: Seed*coordinates for all random elements?
+	[ ] Make characters able to walk up a slab easily but not up two slabs, as well as not be able to walk over each other.
+	[ ] Fix Spriteflip dir glitchy when in the center
+
+	Inspiration "Four Game Develeopers Jam off Same Art Kit"
+	[ ] Terrain shader(?) effect: slightly displace vertices of terrain to make it feel slightly more natural and less perfect:	
+	[ ] Camera tilt is modified when close to a wall to be more topdown and view the character better.
+	[ ] Terrain variance (grass etc) blends simply into one another with a slightly modified color and choppy borders
+
+	4/13/20
+	Fixed shader transparency issue with sprites cutting into each other by clipping transparent pixels from rendering
+	Combined two different shaders back into the same shader, since I found a better way of fixing transparency clipping issue
+
+	4/12/20
+	Fixed shader issue with transparency clipping by creating two shaders: geometry and transparent
+	Added a fog version of shader
+
+	4/11/20
+	[X] Change test terrain entity to an actual grass block mesh and material
+	cb
+	4/10/20
+	Fixed rendering and animation
+	[X] Find a way for entities to hold references to their mesh and material to be referenced in SysRenderMesh
+	Camera, billboarding, rendering and animation systems all seem to be finished and working as intended.
+
+	4/9/20
+	[X] Fix billboard rotation
+		- How to rotate sprite without rotating collider?
+	Made billboard sprites as a child entity
+	[X] EntityFactory sprite constructors
+	[X] SpriteFlip
+		- Old was based on actual parent rotation. Need to store movementVector 
+			separately and reference that to get the movement "rotation"
+		- Does spriteflip only apply to billboards? is there any point in separating it?
+			Or should spriteflip be included in SysBillboard?
+	[X] Convert mesh render to a custom component using Graphics.DrawMesh
+	[X] UV Animator
+		- Make a class that can create animations from any list of any coords
+			so that it can be used for anything and animation placement isnt hardcoded
+			rather defined on component creation for that entity. there can still be
+			templates. Utilized by "sprites" like characters, and models like animated waterfalls.
+
+	4/8/20
+	Set rotation with direction of movement.
+	[X] Goal: Capsule colliders on characters.
+	[X] Goal: Convert Camera
+		[X] Figure Out ECS context of camera
+			- Camera is left as a regular game object in the scene with a global reference
+			- SysCameraFollow finds a list of entities to follow with component C_CameraFollows,
+				calculates the average, and either sends a target position to camera script or sends info saying there are no target entities to follow
+		[X] Gameobject and Script setup: Camera Target, child Main Camera, Camera Target has CameraController (Merge FollowTarget into script based off of a targetPosition)
+			- If targetPosition is not being set by SysCameraFollow, camera will remain where it was left and switch to EditorPanControl mode rather than FollowTarget mode
+	[X] Goal: Set player movement direction based on camera rotation. Put math in with the MovementVectorCameraConverter utility.
+	[X] Sprite Component Assignment and Display
+		- Sprites have to be square meshes with materialsmn
+	Started billboard system, doesn't quite work right yet.
+
+	4/7/20
+	[X] Goal: Implement collision between characters and walls.
+		[X] Properly add Mass to Entities in Pure ECS  
+	Planned Potential AI Behavior System
+	[X]	Goal: Simple AI Controller
+		[X] CompAI_Wander
+		[X] SysAI_Wander
+
+	4/6/20 
+	[X] Goal: Design and implement PlayerInput, CharacterController, and Movement components and systems.
+		[X] PlayerInput Component   stores: IntendedMovementDir
+		[X] PlayerInputSystem: Take entities with PlayerInput, apply info to CharacterController Component
+		[X] CharacterControlMover stores: IntendedMovementDir
+		[X] CharacterControlMoverSystem: Take entities with CompCharControl and apply info to Movement
+		[X] CompMover stores: IntendedMovementDir, Speed
+		[X] SysMovement: Apply CompMover values to PhysicsVelocity
+	[X] Add Colliders to Entities in Pure ECS
+
+	4/5/20
+	[X] Goal: Make a new project to begin converting project to ECS.
+	[X] Goal: Define current systems and components to be carried over.
+	Created EntityFactory
+	Transferred Resources Loader class
+	Got entities to spawn at various coordinates and display their loaded mesh and material
+
+	4/4/20
+	Investigate and Researched Unity ECS
+	Decided to make the commitment to make the switch, for better future development including multiplayer integration.
+
+	4/3/20
+	Investigate Marching Cubes
+	Testing Marching Cubes Model Project
+
+	4/2/20
+	More Entity Design Consideration
+	Entity Components Diagram
+	Game Design Doc - Construction
+
+	4/1/20
+    Examined Entity Class, planned out Entity refactoring and EntityFactory
+    Game Design Doc - Inspirations
+	Improved look of Highlight Block & height indicator
+	Game Design Doc - Game Loops
+
+	=========================================================================================================================================================================================================================================================
+
+    3/31/20
+    Created Startup Class, organizing order of startup operations
+    Created Program prefab, organizing highest level operations within
+    Added Tree to Tile.IDs and ObjectFactory
+    Added Grass to Tile.IDs and ObjectFactory
+    Created IsBlock() method to Tile.ID
+    Modified Block class to recognize any block as neighboring blocks using Tile.IsBlock()
+    Modified Highlight block Model and Material to be a purple cubes
+    Duplicated Highlight block model to visualize height better
+    Adding charAnims to be loaded and created in Resource
+    Modified EntityAnimator class to use Resource sourced charAnims

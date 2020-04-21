@@ -1,0 +1,174 @@
+	
+
+	Up Next:
+		Entity System and Player Control, so it becomes a GAME again!
+
+	Tiles:
+        [X] Blocks: Grass, Dirt, Brick
+        [X] Neighboring blocks models don't change
+        [ ] Block models blend together, but textures still have borders
+        [X] Tree
+        [ ] Bush / Tallgrass Merge (?)
+        [ ] Post
+        [ ] Bridge
+        [ ] Water and Waterfalls:
+            [ ] Textures
+            [ ] Models
+            [ ] Script (Like Block.cs)
+
+    Island Generation
+        [ ] Heightmap
+        [ ] Water: Ocean, Rivers, Ponds
+        [ ] Foliage and Trees
+        [ ] Entities
+        [ ] Editor Generate New Island Button
+
+    Editor:
+        [ ] Only place certain objects with certain circumstances: Space is empty, block is below, etc
+        [ ] Overlay Scene
+        [ ] Tool Select: Tile Placement, Entity Placement, Entity Control
+
+    Saving and Loading
+        [ ] Tile Data
+        [ ] Entity Data
+
+    Clean Up Project:
+        [ ] Models
+        [ ] Materials
+        [ ] Textures
+        [ ] Sprites
+        [ ] Scripts
+        [ ] Prefabs
+
+	[ ] Determine size, shape, and presentation of stages.
+		Circular Stage? Grid array is strange, edges of various cliffs could be strange, require several different models just for different edge pieces.
+
+	[ ] Camera Toggle: Zoomed in character, Whole stage
+		When zoomed out, you can view the entire stage, and the camera is centered on the center of the map.
+		When zoomed in, the camera views the specific entity it is following.
+
+    Project Overall Document
+        [ ] Document the High Level Workings of the Project, for future reference 
+		[ ] Documents specific modularlized systems and the classes that are a part of it.
+			Game systems should be designed to literally be able to be pulled out of one project and dropped into another with no refactoring needed.
+
+	[ ] Text Bubbles
+		Look to A Short Hike for inspiration:
+		Small one line bubbles that appear as a chat bubble above the entity who says it.
+		Quickly "Typewriter" types the message, and the bubble expands with the message as it is growing.
+
+	[ ] World size / borders:
+		One option is to have an openly generated world, saving only modifications to file. Minecraft for instance.
+		In this option, a stylized fog can be used to hide the borders of unloaded chunks in the distance.
+		Look at A Short Hike for inspiration on stylized fog.
+
+	[ ] Lighting Shader
+		"Step/Cell" Lighting: The game will determine, with a hard edge line, where something is in darkness/shadow (potentially 2 levels), sky lighting, and light emitter such as a torch.
+		This lighting needs to be applied to both 3d models and sprites
+		The math is the same, but the sprite will choose its shading based on a specific point in the 3d light space, probably centered on the sprite or the top of the sprite
+
+	=========================================================================================================================================================================================================================================================
+
+    Entities:
+        [ ] High level Organization: EntityContainer, EntityManager, EntityFactory
+        [X] Sprites and Animations 
+        [ ] Factory
+            [ ] Entity.GetComponent<EntityAnimator>().SetAnimationSheet(Resource.animationSheet.key["Goblin"]);
+        [ ] Entity Control / Submit to AI
+
+        [ ] Refactor Entity.cs, way too big:
+            Current Variables:
+            - Alignment & Enum
+            - Disposition to each Alignment & Enum
+            - Threat and Braveness levels
+            - Max health, current health
+            - Walkspeed
+            - Jump Power
+            - Pushback speed, time, stuntime, invulnerable time
+            - Attack length
+            - (Attack strength is hardcoded..)
+            - States: isAttacking, canAttack, canWalk, isInvulnerable
+            - movementVector and controllerMovementVector
+
+            Current Components:
+            - Rigidbody
+            - Collider
+            - EntityAnimator
+            - DebugText
+
+            Current Responsibilities:
+            - Walking
+            - Attacking
+            - Hurt other on touch
+            - Jumping
+            - Suffer pushback
+            - Lots of state getters
+            - A few setters
+            - Taking Damage
+            - Dieing
+
+            Examined Responsibilities to Refactor into:
+			[ ] Entity.cs				EntityContainer Data, Rigidbody, Collider, Anything that ALL Entities share
+				- Register Added components into a list of EntityComponents (?)
+
+			[ ] EntityController.cs		Player, AI, or Inanimate if not included
+            [ ] EntitySentience.cs		Dynamic Relation to Others: Alignment, Disposition, Threat, Braveness (Tied to EntityController? Any reason they are not exclusive to each other?)
+				Cases:
+				An object that AI are afraid of or will attack, even if that object is inanimate.
+				Braveness only applies to AI; not Player or Inanimate. Disposition can be applied to player or AI, not Inanimate. Alignment and Threat can be applied to any.
+					Sentience is mainly used for AI, to determine how to act.
+					Sentience for player uses disposition simply to prevent friendly fire.
+					Otherwise, Sentience for players and inanimate is only used for AI to interact with in their decision making process.
+
+			[ ] EntityAnimator.cs		Animations
+			[ ] EntityMortal.cs			Mortality: Health, Taking Damage, Dieing, Death can spawn an Effect Entity
+			[ ] EntityForceReact.cs		Pushback from Attacks, Exlosions, etc.
+			
+			[~] EntityTalk.cs			Ability to hold or generate messages and display them in a chat bubble. Players, AI, Signs, etc.
+			[ ] EntityAttack.cs			Attacking: Strength, Length, isAttacking, canAttack, Attack(), HurtOnTouch()
+			[ ] EntityWalk.cs			Walking: Walkspeed, canWalk, movementVector, controllerMovementVector
+            [ ] EntityJump.cs			Jumping: Jump Power, Jumpings
+			[?] EntitySwim				Float in water, sink, or swim
+			[?] EntityFly				Float in air or fly
+
+			[~] EntityHoldable.cs		Can be picked up by someone with CarryOther
+			[~] EntityCanHold.cs		Can hold Carryables. Can pick up, set down, and throw Carryables	(Inanimate can be a barrel that holds resource Entities)
+			[?] EntityPickupable.cs		Pickupable item such as coins or hearts
+			[?] EntityCanPickup.cs		Pickup items that are Pickupable.
+			[?] EntityPushable.cs		Objects that can be pushed or pulled, such as a crate.
+			[?] EntityCanPush.cs		Can push pushable objects.
+
+			[?] EntityToolUser.cs		Can use tools: Axe, pickaxe, hoe, fishingrod, etc.
+			[?] EntityWeaponUser.cs		Can equip and use weapons (Tied to EntityAttack?)
+			[?] EntityArmorUser.cs		Can equip armor (Tied to EntityMortal?)
+			[?] EntityInventory.cs		Has an internal inventory of items (May not be a mechanic in this game?)
+
+			[?] EntityGeneratePower.cs	Generates power somehow.
+			[?] EntityUsePower.cs		Accepts power and creates an effect, ie: message, change block.
+			[?] EntityTransferPower.cs	Transfers power from A to B.
+
+			Entity Possibilities:
+			Characters (Player, NPC, Enemies)
+			Dynamic Carryable Objects (Pots, Resources, Crops, Bombs)
+			Attacks (Swipe, Explosion, Arrow)
+			Dropped pickup items (coins, hearts)
+			Pushable objects such as crates
+			Power producers, conducters, and users, such as buttons, wires, and gates.
+
+			Entity Component Interface:
+			- Commands can be issued to Entity.cs, which will pass it on to a relevant component if it exists
+			- Command examples: entity.Damage(amount); entity.Walk(direction, speed); entity.Destroy(); entity.Animate(Anim);
+
+            Entity Factory:
+            Attach components per Entity, not all Entities need to Jump, or Attack, or even Move
+            Have default constructor method for basic entity types, such as humanoid who all share the same components
+            Entities should be able to function with or without any component, commands that are irrelevant are just ignored
+
+
+	=========================================================================================================================================================================================================================================================
+
+
+    Bugs and Issues:
+    [ ] Graphics Fix: Spriteflip dir is glitchy when in the center
+	[X] Graphics Fix: Sprites will sometimes clip into adjacent frames showing a thin line
+	[X] Graphics Fix: When two entities are side by side, their texture can overlap and the transparency of one cuts into the other sprite

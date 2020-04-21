@@ -1,0 +1,32 @@
+
+	1) Limited Marching Cubes
+
+	2) Slabs with variable "health"
+		- Slab terrain / building inspired by Tactics Ogre 
+		- The world is made up of slab blocks, or objects that take up the space of one slab slot or multiple
+		- There are no terrain slopes, only slab staircases which can be walked up by entities without jumping, and can attack up or down 1 block with no problem
+		- The player can hold a modify button when breaking or placing blocks to "carve" the health of the block, changing the model:
+
+			Corner Slab:
+			Starts out as a full square block
+			One hit carves it down to an outward rounded corner
+			Two hits carves it down to a diagonal edgecorner
+			Three hits carves it down to an inward rounded corner
+			Four hits destroys the block
+
+			End and Lone Slabs:
+			Starts out as a full square block
+			One hit carves it to  have rounded corners
+			Two hits destroys the block
+
+	3) Slabs with either full or half health
+		- Same as 2 but
+		- The only blocks with a possibility of half health are corners
+		- Corners can either be very slightly rounded (default) like ends and lones are, OR
+		- Corners can be a diagonal if cut to half health, just like animal crossing.
+		- Potentially, tiny inner corners are made by default, opposing the default tiny rounded corner by default.
+		- This gives terrain a slightly rounded effect by default, but still blocky.
+		- Half diagonal corner blocks are scattered throughout, allowing for somewhat more interesting shapes, without overcomplicating options.
+		- Heavy inspiration from animal crossing.
+		- The diagonal corners cant hold items on either the top or bottom, though, the floors of each can be customized.
+		- The cliff sits on a regular floor piece, the floor on top of the cliff requires a special UV and texture for a slant.

@@ -1,0 +1,2 @@
+D:\Dropbox\TheGameECS\obj\Debug\Assembly-CSharp.csprojAssemblyReference.cache
+D:\Dropbox\TheGameECS\obj\Debug\Assembly-CSharp.csproj.CoreCompileInputs.cache
