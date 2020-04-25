@@ -25,10 +25,7 @@ public static class UVAnimation
                 defaultSpeed = 10f,
                 coords = new List<float2>
                 {
-                    new float2(0/4f, 0/4f),
-                    new float2(1/4f, 0/4f),
-                    new float2(2/4f, 0/4f),
-                    new float2(3/4f, 0/4f)
+                    new float2(0/4f, 0/4f)
                 }
             }
         },
@@ -38,12 +35,20 @@ public static class UVAnimation
                 defaultSpeed = 10f,
                 coords = new List<float2>
                 {
-                    new float2(0/4f, 1/4f),
-                    new float2(1/4f, 1/4f),
-                    new float2(2/4f, 1/4f),
-                    new float2(3/4f, 1/4f)
+                    new float2(0/4f, 0/4f),
+                    new float2(1/4f, 0/4f),
+                    new float2(2/4f, 0/4f),
+                    new float2(3/4f, 0/4f)
                 }
             }
         }
     };
+
+    public static void StartAnimation(C_Animates cAnim, Anim anim)
+    {
+        cAnim.currentAnim = anim;
+        cAnim.animFrame = 0;
+        cAnim.animFrameTimer = 0;
+        cAnim.animSpeed = UVAnimation.anim[anim].defaultSpeed;
+    }
 }

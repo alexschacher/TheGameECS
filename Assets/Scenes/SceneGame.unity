@@ -378,8 +378,8 @@ MonoBehaviour:
     type: 3}
   terrainMaterial: {fileID: 2100000, guid: eb6f6662bd0a24d4e86158c7213cf15a, type: 2}
   characterMaterial: {fileID: 2100000, guid: 99d47720a7c7c234d829370b5c433a9a, type: 2}
-  levelWidth: 45
-  levelLength: 45
+  levelWidth: 11
+  levelLength: 11
 --- !u!4 &1661182538
 Transform:
   m_ObjectHideFlags: 0
