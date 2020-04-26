@@ -1,7 +1,7 @@
 ﻿// SysAnimateUV:
 // - Runs the timers keeping track of frames on entities with CompAnimatedUV using animation speed
 // - Sets UV coords on CompRenderMesh to the correct frame to display
-// - Destroys the entitity if it is tagged to destroyAfterAnim in CompAnimatedUV (Not yet implemented)
+// - Destroys the entity if it is tagged to destroyAfterAnim in CompAnimatedUV (Not yet implemented)
 
 using Unity.Entities;
 using Unity.Mathematics;
@@ -13,7 +13,7 @@ public class S_AnimateUVs : ComponentSystem
         Entities.ForEach((
             Entity e,
             ref C_Animates cAnim,
-            ref CompRenderMesh cRenderMesh) =>
+            ref C_RendersMesh cRenderMesh) =>
         {
             int numOfFrames = UVAnimation.anim[cAnim.currentAnim].coords.Count;
 
@@ -24,7 +24,7 @@ public class S_AnimateUVs : ComponentSystem
                 cAnim.animFrame++;
             }
 
-            if (cAnim.animFrame >= numOfFrames)
+            while (cAnim.animFrame >= numOfFrames)
             {
                 cAnim.animFrame -= numOfFrames;
 

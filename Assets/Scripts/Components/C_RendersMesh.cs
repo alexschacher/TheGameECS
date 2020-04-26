@@ -3,7 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 
 [Serializable]
-public struct CompRenderMesh : IComponentData
+public struct C_RendersMesh : IComponentData
 {
     public Resource.Mat material;
     public Resource.Mesh mesh;

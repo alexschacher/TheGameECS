@@ -298,7 +298,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0.8085568, b: 1, a: 1}
+  m_BackGroundColor: {r: 0.27612138, g: 0.43952966, b: 0.6886792, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -374,12 +374,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34c137463296cc1409b15905f5873df6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blockMesh: {fileID: -5495902117074765545, guid: c64930d435c2c6f49874164bf4db2b26,
-    type: 3}
-  terrainMaterial: {fileID: 2100000, guid: eb6f6662bd0a24d4e86158c7213cf15a, type: 2}
-  characterMaterial: {fileID: 2100000, guid: 99d47720a7c7c234d829370b5c433a9a, type: 2}
-  levelWidth: 11
-  levelLength: 11
 --- !u!4 &1661182538
 Transform:
   m_ObjectHideFlags: 0

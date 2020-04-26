@@ -11,10 +11,9 @@ public class S_GetPlayerInput : ComponentSystem
 {
     protected override void OnUpdate()
     {
-        // Get Player Input and apply to Player Control Components
-
         Entities.ForEach((
-            ref C_IsControlledByPlayer cPlayerControlsMovement) =>
+            ref C_IsControlledByPlayer cPlayerControlsMovement,
+            ref C_ControlsMovement cControlMover) =>
         {
             Vector3 inputVector = MovementVectorCameraConverter.convertMovementVector(
                 Input.GetAxisRaw("Walk_Vertical_P1"),
@@ -22,15 +21,18 @@ public class S_GetPlayerInput : ComponentSystem
 
             cPlayerControlsMovement.moveDirIntention.x = inputVector.x;
             cPlayerControlsMovement.moveDirIntention.y = inputVector.z;
-        });
 
-        // Update CompControlsMovement with Components that would control it, such as Player or AI
+            cControlMover.dirIntention = cPlayerControlsMovement.moveDirIntention;
+        });
 
         Entities.ForEach((
             ref C_IsControlledByPlayer cPlayerControlsMovement,
-            ref C_ControlsMovement cControlMover) =>
+            ref C_Jumps cJumps) =>
         {
-            cControlMover.dirIntention = cPlayerControlsMovement.moveDirIntention;
+            if (Input.GetButtonDown("Jump_P1"))
+            {
+                cJumps.isAttemptingJump = true;
+            }
         });
     }
 }

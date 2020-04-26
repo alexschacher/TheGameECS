@@ -6,5 +6,6 @@ using Unity.Mathematics;
 [Serializable]
 public struct C_IsBillboarded : IComponentData
 {
+    public float xScale;
     public bool flipTexureFacing;
 }
