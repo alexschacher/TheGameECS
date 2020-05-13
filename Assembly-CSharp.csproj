@@ -28,7 +28,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>0169</NoWarn>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,7 +37,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>0169</NoWarn>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <NoConfig>true</NoConfig>
@@ -62,33 +62,69 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Components\C_Animates.cs" />
-    <Compile Include="Assets\Scripts\Components\C_ControlsMovement.cs" />
-    <Compile Include="Assets\Scripts\Components\C_FacesDirection.cs" />
-    <Compile Include="Assets\Scripts\Components\C_IsBillboarded.cs" />
-    <Compile Include="Assets\Scripts\Components\C_IsControlledByAI_Wander.cs" />
-    <Compile Include="Assets\Scripts\Components\C_IsControlledByPlayer.cs" />
-    <Compile Include="Assets\Scripts\Components\C_IsFollowedByCamera.cs" />
-    <Compile Include="Assets\Scripts\Components\C_Jumps.cs" />
-    <Compile Include="Assets\Scripts\Components\C_Moves.cs" />
-    <Compile Include="Assets\Scripts\Components\C_RendersMesh.cs" />
-    <Compile Include="Assets\Scripts\Content Management\EntityFactory.cs" />
-    <Compile Include="Assets\Scripts\Content Management\Resource.cs" />
-    <Compile Include="Assets\Scripts\Content Management\UVAnimation.cs" />
+    <Compile Include="Assets\Scripts\AI\Components\C_IsControlledByAI_Wander.cs" />
+    <Compile Include="Assets\Scripts\AI\Systems\S_AI_Wander.cs" />
+    <Compile Include="Assets\Scripts\Combat\Components\C_CanAttack.cs" />
+    <Compile Include="Assets\Scripts\Combat\Components\C_CanDie.cs" />
+    <Compile Include="Assets\Scripts\Combat\Components\C_InflictsDamage.cs" />
+    <Compile Include="Assets\Scripts\Combat\Components\C_IsDestroyedAfterTimer.cs" />
+    <Compile Include="Assets\Scripts\Combat\Components\C_IsImmobilized.cs" />
+    <Compile Include="Assets\Scripts\Combat\Components\C_IsInvulnerable.cs" />
+    <Compile Include="Assets\Scripts\Combat\Components\C_TakesDamage.cs" />
+    <Compile Include="Assets\Scripts\Combat\Systems\S_DestroyAfterTimer.cs" />
+    <Compile Include="Assets\Scripts\Combat\Systems\S_HandleAttacks.cs" />
+    <Compile Include="Assets\Scripts\Combat\Systems\S_HandleDamageCollisions.cs" />
+    <Compile Include="Assets\Scripts\Combat\Systems\S_HandleDeath.cs" />
+    <Compile Include="Assets\Scripts\Combat\Systems\S_HandleImmobilized.cs" />
+    <Compile Include="Assets\Scripts\Combat\Systems\S_HandleInvulnerable.cs" />
+    <Compile Include="Assets\Scripts\Content\EntityFactory.cs" />
+    <Compile Include="Assets\Scripts\Content\Resource.cs" />
+    <Compile Include="Assets\Scripts\Content\UVAnimation.cs" />
+    <Compile Include="Assets\Scripts\Force\Components\C_AppliesForce.cs" />
+    <Compile Include="Assets\Scripts\Force\Components\C_ReactsToForce.cs" />
+    <Compile Include="Assets\Scripts\Force\Systems\S_HandleForceCollisions.cs" />
+    <Compile Include="Assets\Scripts\Force\Systems\S_HandleForceTimers.cs" />
     <Compile Include="Assets\Scripts\Graphics\CameraController.cs" />
+    <Compile Include="Assets\Scripts\Graphics\Components\C_Animates.cs" />
+    <Compile Include="Assets\Scripts\Graphics\Components\C_HasMesh.cs" />
+    <Compile Include="Assets\Scripts\Graphics\Components\C_IsBillboarded.cs" />
+    <Compile Include="Assets\Scripts\Graphics\Components\C_IsFlashingColor.cs" />
+    <Compile Include="Assets\Scripts\Graphics\Components\C_IsFollowedByCamera.cs" />
+    <Compile Include="Assets\Scripts\Graphics\Systems\S_AnimateUVs.cs" />
+    <Compile Include="Assets\Scripts\Graphics\Systems\S_DetermineAnimationState.cs" />
+    <Compile Include="Assets\Scripts\Graphics\Systems\S_FlashColor.cs" />
+    <Compile Include="Assets\Scripts\Graphics\Systems\S_RenderMeshes.cs" />
+    <Compile Include="Assets\Scripts\Graphics\Systems\S_UpdateCamera.cs" />
+    <Compile Include="Assets\Scripts\Holding\Components\C_CanBeHeld.cs" />
+    <Compile Include="Assets\Scripts\Holding\Components\C_CanHold.cs" />
+    <Compile Include="Assets\Scripts\Holding\Components\C_HasBeenThrown.cs" />
+    <Compile Include="Assets\Scripts\Holding\Components\C_IsHeld.cs" />
+    <Compile Include="Assets\Scripts\Holding\Components\C_IsHolding.cs" />
+    <Compile Include="Assets\Scripts\Holding\Systems\S_HandleHolding_Grab.cs" />
+    <Compile Include="Assets\Scripts\Holding\Systems\S_HandleHolding_Throw.cs" />
+    <Compile Include="Assets\Scripts\Holding\Systems\S_RemoveThrownWhenGrounded.cs" />
+    <Compile Include="Assets\Scripts\Level\Components\C_ConnectsToNeighbors.cs" />
+    <Compile Include="Assets\Scripts\Level\Components\C_IsAwaitingTerrainMeshRefresh.cs" />
+    <Compile Include="Assets\Scripts\Level\Components\C_LevelData.cs" />
     <Compile Include="Assets\Scripts\Level\Level.cs" />
     <Compile Include="Assets\Scripts\Level\LevelGenerator.cs" />
     <Compile Include="Assets\Scripts\Level\LevelInstantiator.cs" />
+    <Compile Include="Assets\Scripts\Level\Systems\S_RefreshTerrainMeshes.cs" />
+    <Compile Include="Assets\Scripts\Movement\Components\C_CanJump.cs" />
+    <Compile Include="Assets\Scripts\Movement\Components\C_ControlsMovement.cs" />
+    <Compile Include="Assets\Scripts\Movement\Components\C_FacesDirection.cs" />
+    <Compile Include="Assets\Scripts\Movement\Components\C_HasGravity.cs" />
+    <Compile Include="Assets\Scripts\Movement\Components\C_HasVerticalMovement.cs" />
+    <Compile Include="Assets\Scripts\Movement\Components\C_SnapsToEntityPosition.cs" />
+    <Compile Include="Assets\Scripts\Movement\Systems\S_ApplyGravity.cs" />
+    <Compile Include="Assets\Scripts\Movement\Systems\S_ApplyVelocity.cs" />
+    <Compile Include="Assets\Scripts\Movement\Systems\S_HandleFacing.cs" />
+    <Compile Include="Assets\Scripts\Movement\Systems\S_HandleJump.cs" />
+    <Compile Include="Assets\Scripts\Movement\Systems\S_HandleSnapsToEntityPosition.cs" />
+    <Compile Include="Assets\Scripts\Player\C_IsControlledByPlayer.cs" />
+    <Compile Include="Assets\Scripts\Player\S_GetPlayerInput.cs" />
     <Compile Include="Assets\Scripts\Startup.cs" />
-    <Compile Include="Assets\Scripts\Systems\S_AI_Wander.cs" />
-    <Compile Include="Assets\Scripts\Systems\S_AnimateUVs.cs" />
-    <Compile Include="Assets\Scripts\Systems\S_ControlEntities.cs" />
-    <Compile Include="Assets\Scripts\Systems\S_ControlEntitiesJump.cs" />
-    <Compile Include="Assets\Scripts\Systems\S_DetermineAnimationState.cs" />
-    <Compile Include="Assets\Scripts\Systems\S_GetPlayerInput.cs" />
-    <Compile Include="Assets\Scripts\Systems\S_MoveEntities.cs" />
-    <Compile Include="Assets\Scripts\Systems\S_RenderMeshes.cs" />
-    <Compile Include="Assets\Scripts\Systems\S_UpdateCamera.cs" />
+    <Compile Include="Assets\Scripts\Utility\Log.cs" />
     <Compile Include="Assets\Scripts\Utility\MovementVectorCameraConverter.cs" />
     <None Include="Assets\Notes\AIGoalSystem.txt" />
     <None Include="Assets\Notes\GameDesignDoc.txt" />

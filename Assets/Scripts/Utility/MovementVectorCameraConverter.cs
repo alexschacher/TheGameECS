@@ -2,7 +2,7 @@
 
 public static class MovementVectorCameraConverter
 {
-    public static Vector3 convertMovementVector(float verticalInput, float horizontalInput)
+    public static Vector3 ConvertAndNormalizeInputVector(float verticalInput, float horizontalInput)
     {
         // Camera direction
         Vector3 camForward = Camera.main.transform.forward;

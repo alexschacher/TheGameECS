@@ -4,7 +4,7 @@
     {
       "FullName": "Unity.Burst, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
       "FilePath": "D:\\Dropbox\\TheGameECS\\Library\\ScriptAssemblies\\Unity.Burst.dll",
-      "LastWriteTime": "2020-04-24T04:22:25.1182415Z"
+      "LastWriteTime": "2020-05-13T04:55:17.455518Z"
     },
     {
       "FullName": "netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51",
@@ -19,7 +19,7 @@
     {
       "FullName": "Unity.Entities, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
       "FilePath": "D:\\Dropbox\\TheGameECS\\Library\\ScriptAssemblies\\Unity.Entities.dll",
-      "LastWriteTime": "2020-04-24T04:22:41.1897712Z"
+      "LastWriteTime": "2020-05-13T04:57:57.9147541Z"
     },
     {
       "FullName": "UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
@@ -29,12 +29,12 @@
     {
       "FullName": "Unity.Collections, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
       "FilePath": "D:\\Dropbox\\TheGameECS\\Library\\ScriptAssemblies\\Unity.Collections.dll",
-      "LastWriteTime": "2020-04-24T04:22:28.1569319Z"
+      "LastWriteTime": "2020-05-13T04:55:20.4339422Z"
     },
     {
       "FullName": "Unity.Mathematics, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
       "FilePath": "D:\\Dropbox\\TheGameECS\\Library\\ScriptAssemblies\\Unity.Mathematics.dll",
-      "LastWriteTime": "2020-04-24T04:22:26.9965822Z"
+      "LastWriteTime": "2020-05-13T04:55:19.6402036Z"
     },
     {
       "FullName": "mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
@@ -44,7 +44,7 @@
     {
       "FullName": "Unity.Entities.StaticTypeRegistry, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
       "FilePath": "D:\\Dropbox\\TheGameECS\\Library\\ScriptAssemblies\\Unity.Entities.StaticTypeRegistry.dll",
-      "LastWriteTime": "2020-04-24T04:22:22.7031267Z"
+      "LastWriteTime": "2020-05-13T04:55:17.1053632Z"
     },
     {
       "FullName": "System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
@@ -64,27 +64,27 @@
     {
       "FullName": "Unity.Scenes.Hybrid, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
       "FilePath": "D:\\Dropbox\\TheGameECS\\Library\\ScriptAssemblies\\Unity.Scenes.Hybrid.dll",
-      "LastWriteTime": "2020-04-24T04:22:41.3518588Z"
+      "LastWriteTime": "2020-05-13T04:57:57.1049972Z"
     },
     {
       "FullName": "Unity.Physics, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
       "FilePath": "D:\\Dropbox\\TheGameECS\\Library\\ScriptAssemblies\\Unity.Physics.dll",
-      "LastWriteTime": "2020-04-24T04:22:41.8303321Z"
+      "LastWriteTime": "2020-05-13T04:57:57.5650454Z"
     },
     {
       "FullName": "Unity.Transforms, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
       "FilePath": "D:\\Dropbox\\TheGameECS\\Library\\ScriptAssemblies\\Unity.Transforms.dll",
-      "LastWriteTime": "2020-04-24T04:22:40.4822556Z"
+      "LastWriteTime": "2020-05-13T04:57:56.9298066Z"
     },
     {
       "FullName": "Unity.Jobs, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
       "FilePath": "D:\\Dropbox\\TheGameECS\\Library\\ScriptAssemblies\\Unity.Jobs.dll",
-      "LastWriteTime": "2020-04-24T04:22:29.4312139Z"
+      "LastWriteTime": "2020-05-13T04:55:20.8298965Z"
     },
     {
       "FullName": "Unity.Rendering.Hybrid, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
       "FilePath": "D:\\Dropbox\\TheGameECS\\Library\\ScriptAssemblies\\Unity.Rendering.Hybrid.dll",
-      "LastWriteTime": "2020-04-24T04:22:41.7525538Z"
+      "LastWriteTime": "2020-05-13T04:57:57.2908996Z"
     }
   ],
   "Functions": [
@@ -850,81 +850,6 @@
       ]
     },
     {
-      "FullName": "System.Void Unity.Jobs.IJobExtensions/JobStruct`1<Unity.Entities.GatherChunksAndOffsetsWithFilteringJob>::Execute(T&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)",
-      "ModuleOptionsHash": 10400676583197497630,
-      "ModuleHash": "cf4f76355e92773b34865531b56ff807",
-      "LinkName": "6DD3695FA5E9DA1A",
-      "AssemblyDependencyIndices": [
-        4,
-        3,
-        7,
-        1,
-        2,
-        5
-      ]
-    },
-    {
-      "FullName": "System.Void Unity.Entities.JobChunkExtensions/JobChunk_Process`1<Unity.Transforms.ParentSystem/GatherChangedParents>::Execute(Unity.Entities.JobChunkExtensions/JobChunkData`1<T>&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)",
-      "ModuleOptionsHash": 10400676583197497630,
-      "ModuleHash": "838957f0ff461b8af6494af5b43d936e",
-      "LinkName": "23C6B0088A202ED6",
-      "AssemblyDependencyIndices": [
-        3,
-        14,
-        1,
-        2,
-        4,
-        7,
-        5
-      ]
-    },
-    {
-      "FullName": "System.Void Unity.Jobs.IJobExtensions/JobStruct`1<Unity.Transforms.ParentSystem/FindMissingChild>::Execute(T&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)",
-      "ModuleOptionsHash": 10400676583197497630,
-      "ModuleHash": "fd8b5220b271c1bda276776ce0e40177",
-      "LinkName": "3ECA3D7CCCF185EC",
-      "AssemblyDependencyIndices": [
-        4,
-        14,
-        7,
-        1,
-        2,
-        5,
-        3,
-        6
-      ]
-    },
-    {
-      "FullName": "System.Void Unity.Jobs.IJobExtensions/JobStruct`1<Unity.Transforms.ParentSystem/FixupChangedChildren>::Execute(T&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)",
-      "ModuleOptionsHash": 10400676583197497630,
-      "ModuleHash": "1551d0191dd917181a3f71edafae6824",
-      "LinkName": "ACE3633765E8E12C",
-      "AssemblyDependencyIndices": [
-        4,
-        14,
-        7,
-        1,
-        2,
-        5,
-        3
-      ]
-    },
-    {
-      "FullName": "System.Void Unity.Entities.JobChunkExtensions/JobChunk_Process`1<Unity.Transforms.TRSToLocalToParentSystem/TRSToLocalToParent>::Execute(Unity.Entities.JobChunkExtensions/JobChunkData`1<T>&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)",
-      "ModuleOptionsHash": 10400676583197497630,
-      "ModuleHash": "37c102f31cf6a080e7240f27e286ccf2",
-      "LinkName": "1450B042B4244AA0",
-      "AssemblyDependencyIndices": [
-        3,
-        14,
-        1,
-        2,
-        4,
-        7,
-        6
-      ]
-    },
-    {
       "FullName": "System.Void Unity.Entities.JobChunkExtensions/JobChunk_Process`1<Unity.Transforms.TRSToLocalToWorldSystem/TRSToLocalToWorld>::Execute(Unity.Entities.JobChunkExtensions/JobChunkData`1<T>&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)",
       "ModuleOptionsHash": 10400676583197497630,
       "ModuleHash": "44d5bd7b51a8456fa0195a0663d2e32a",
@@ -937,22 +862,6 @@
         4,
         7,
         6
-      ]
-    },
-    {
-      "FullName": "System.Void Unity.Entities.JobChunkExtensions/JobChunk_Process`1<Unity.Transforms.LocalToParentSystem/UpdateHierarchy>::Execute(Unity.Entities.JobChunkExtensions/JobChunkData`1<T>&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)",
-      "ModuleOptionsHash": 10400676583197497630,
-      "ModuleHash": "8c1e3aaef973fe598aa1b858d891c2ef",
-      "LinkName": "0449AE347AF3D5BB",
-      "AssemblyDependencyIndices": [
-        3,
-        14,
-        1,
-        2,
-        4,
-        7,
-        6,
-        5
       ]
     },
     {

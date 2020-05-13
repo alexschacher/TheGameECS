@@ -3,6 +3,7 @@ Shader "Custom/ThisGameShader"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+		_Color("Color", Color) = (1, 1, 1, 1)
 		_NoiseTex("Noise Tex", 2D) = "white" {}
 		_FogColor("Fog Color", Color) = (1, 1, 0.85, 1.0)
 		_FogDistance("Fog Distance", Float) = 3
@@ -37,6 +38,7 @@ Shader "Custom/ThisGameShader"
             };
 
 			sampler2D _MainTex;
+			fixed4 _Color;
 			sampler2D _NoiseTex;
 			fixed4 _FogColor;
 			float _FogDistance;;
@@ -71,7 +73,7 @@ Shader "Custom/ThisGameShader"
             fixed4 frag (v2f IN) : SV_Target
             {
                 UNITY_SETUP_INSTANCE_ID(IN);
-				fixed4 c = tex2D(_MainTex, IN.uv); // Get color from texture at uv coords
+				fixed4 c = tex2D(_MainTex, IN.uv) * _Color; // Get color from texture at uv coords, and multiply by color
 				clip(c.a - 0.5); // Dont render transparent pixels
 				// c = lerp(c, _FogColor, saturate(-_FogDistance / 100 * i.depth)); // Apply fog
 				return c;

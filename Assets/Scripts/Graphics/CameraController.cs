@@ -1,19 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    // Singleton
-    private static CameraController _instance;
-    public static CameraController Instance { get { return _instance; } }
+    public static CameraController Instance { get; private set; }
 
     // Input Parameters
-    [SerializeField] private float rotationSpeed = 5f;
-    [SerializeField] private float zoomSpeed = 2f;
-    [SerializeField] private float angleSnap = 45f;
-    [SerializeField] private float followTargetSmoothSpeed = 0.25f;
-    [SerializeField] private Vector3 followTargetOffset = Vector3.zero;
+    private float rotationSpeed = 1f;
+    private float zoomSpeed = 1f;
+    private float panSpeed = 1f;
+    private float rotationAngleSnap = 45f;
+    private float followTargetSmoothSpeed = 0.25f;
+    private Vector3 followTargetOffset = Vector3.zero;
     private Vector3[] zoomPositions; // Currently hardcoded in Start()
 
     // Internal States
@@ -21,6 +18,7 @@ public class CameraController : MonoBehaviour
     private bool canZoom = true;
     private bool canRotate = true;
     private bool inFollowMode = true; // Currently doesnt change. Add a way to toggle
+    private bool inPanMode = false;     // Currently doesnt change. Add a way to toggle
     private Vector3 targetRotationAngle;
     private Vector3 currentRotationAngle;
     private Vector3 targetZoomPosition;
@@ -32,9 +30,9 @@ public class CameraController : MonoBehaviour
     void Awake()
     {
         // Singleton Reference
-        if (_instance == null)
+        if (Instance == null)
         {
-            _instance = this;
+            Instance = this;
         }
     }
 
@@ -42,9 +40,12 @@ public class CameraController : MonoBehaviour
     {
         // Hardcoded Zoom Positions
         zoomPositions = new Vector3[3];
-        zoomPositions[0] = new Vector3(0f, -2.4f, -40f); //24f
-        zoomPositions[1] = new Vector3(0f, -3.6f, -19f);
-        zoomPositions[2] = new Vector3(0f, -4.8f, -14f);
+        zoomPositions[0] = new Vector3(0f, -1.2f, -40f);
+        //zoomPositions[0] = new Vector3(0f, -2.4f, -35f);
+        zoomPositions[1] = new Vector3(0f, -2.4f, -30f);
+        //zoomPositions[1] = new Vector3(0f, -2.4f, -24f);
+        zoomPositions[2] = new Vector3(0f, -3.6f, -19f);
+        //zoomPositions[2] = new Vector3(0f, -4.8f, -14f);
 
         targetRotationAngle = transform.eulerAngles;
         currentRotationAngle = transform.eulerAngles;
@@ -58,23 +59,19 @@ public class CameraController : MonoBehaviour
     {
         GetRotationInput();
         GetZoomInput();
-        if (!inFollowMode)
+        if (inPanMode && !inFollowMode)
         {
             GetPanInput();
+        }
+        if (inFollowMode)
+        {
+            FollowTarget();
         }
         LerpRotation();
         LerpZoom();
 
         // TODO slerp a LookAt target instead of Camera Target, for a slightly more 3d feel even when not rotating. Without slerp it will make you sick.
         cam.LookAt(transform, Vector3.up);
-    }
-
-    void FixedUpdate()
-    {
-        if (inFollowMode)
-        {
-            FollowTarget();
-        }
     }
 
     private void FollowTarget()
@@ -88,71 +85,47 @@ public class CameraController : MonoBehaviour
 
     private void GetRotationInput()
     {
-        if (Input.GetAxis("Horizontal2") == 0f)
+        if (Input.GetAxis("Camera_Rotate") == 0f)
         {
             canRotate = true;
         }
-        if ((Input.GetAxis("Horizontal2") < 0f && canRotate == true) || Input.GetKeyDown(KeyCode.Q))
+        if ((Input.GetAxis("Camera_Rotate") < 0f && canRotate == true))
         {
-            targetRotationAngle = new Vector3(targetRotationAngle.x, targetRotationAngle.y + angleSnap, targetRotationAngle.z);
+            targetRotationAngle = new Vector3(targetRotationAngle.x, targetRotationAngle.y + rotationAngleSnap, targetRotationAngle.z);
             canRotate = false;
         }
-        if ((Input.GetAxis("Horizontal2") > 0f && canRotate == true) || Input.GetKeyDown(KeyCode.E))
+        if ((Input.GetAxis("Camera_Rotate") > 0f && canRotate == true))
         {
-            targetRotationAngle = new Vector3(targetRotationAngle.x, targetRotationAngle.y - angleSnap, targetRotationAngle.z);
+            targetRotationAngle = new Vector3(targetRotationAngle.x, targetRotationAngle.y - rotationAngleSnap, targetRotationAngle.z);
             canRotate = false;
         }
     }
 
     private void GetZoomInput()
     {
-        // TODO: Optimize this to better scroll back and forth through a list of positions
-
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            zoomPosition += 1;
-            if (zoomPosition >= zoomPositions.Length)
-            {
-                zoomPosition = 0;
-            }
-            targetZoomPosition = zoomPositions[zoomPosition];
-        }
-
-        if (Input.GetAxis("Vertical2") == 0f && !canZoom)
+        if (Input.GetAxis("Camera_Zoom") == 0f && !canZoom)
         {
             canZoom = true;
         }
-        else if (Input.GetAxis("Vertical2") < 0f && zoomPosition == 0 && canZoom)
+        else if (Input.GetAxis("Camera_Zoom") < 0f && zoomPosition < zoomPositions.Length - 1 && canZoom)
         {
-            zoomPosition = 1;
-            targetZoomPosition = zoomPositions[1];
+            zoomPosition += 1;
+            targetZoomPosition = zoomPositions[zoomPosition];
             canZoom = false;
         }
-        else if (Input.GetAxis("Vertical2") < 0f && zoomPosition == 1 && canZoom)
+        else if (Input.GetAxis("Camera_Zoom") > 0f && zoomPosition > 0 && canZoom)
         {
-            zoomPosition = 2;
-            targetZoomPosition = zoomPositions[2];
-            canZoom = false;
-        }
-        else if (Input.GetAxis("Vertical2") > 0f && zoomPosition == 2 && canZoom)
-        {
-            zoomPosition = 1;
-            targetZoomPosition = zoomPositions[1];
-            canZoom = false;
-        }
-        else if (Input.GetAxis("Vertical2") > 0f && zoomPosition == 1 && canZoom)
-        {
-            zoomPosition = 0;
-            targetZoomPosition = zoomPositions[0];
+            zoomPosition -= 1;
+            targetZoomPosition = zoomPositions[zoomPosition];
             canZoom = false;
         }
     }
 
     private void GetPanInput()
     {
-        transform.position += (MovementVectorCameraConverter.convertMovementVector(
+        transform.position += MovementVectorCameraConverter.ConvertAndNormalizeInputVector(
                 Input.GetAxisRaw("Walk_Vertical_P1"),
-                Input.GetAxisRaw("Walk_Horizontal_P1"))) / 5;
+                Input.GetAxisRaw("Walk_Horizontal_P1")) * panSpeed / 20;
     }
 
     private void LerpRotation()
@@ -160,9 +133,9 @@ public class CameraController : MonoBehaviour
         // TODO: Combine these 2 lerp methods into one method with parameters, maybe move method to a Utility class
 
         currentRotationAngle = new Vector3(
-            Mathf.LerpAngle(currentRotationAngle.x, targetRotationAngle.x, Time.deltaTime * rotationSpeed),
-            Mathf.LerpAngle(currentRotationAngle.y, targetRotationAngle.y, Time.deltaTime * rotationSpeed),
-            Mathf.LerpAngle(currentRotationAngle.z, targetRotationAngle.z, Time.deltaTime * rotationSpeed));
+            Mathf.LerpAngle(currentRotationAngle.x, targetRotationAngle.x, Time.deltaTime * rotationSpeed * 5),
+            Mathf.LerpAngle(currentRotationAngle.y, targetRotationAngle.y, Time.deltaTime * rotationSpeed * 5),
+            Mathf.LerpAngle(currentRotationAngle.z, targetRotationAngle.z, Time.deltaTime * rotationSpeed * 5));
 
         transform.eulerAngles = currentRotationAngle;
     }
@@ -172,9 +145,9 @@ public class CameraController : MonoBehaviour
         // TODO: Combine these 2 lerp methods into one method with parameters, maybe move method to a Utility class
 
         currentZoomPosition = new Vector3(
-            Mathf.Lerp(currentZoomPosition.x, targetZoomPosition.x, Time.deltaTime * zoomSpeed),
-            Mathf.Lerp(currentZoomPosition.y, targetZoomPosition.y, Time.deltaTime * zoomSpeed),
-            Mathf.Lerp(currentZoomPosition.z, targetZoomPosition.z, Time.deltaTime * zoomSpeed));
+            Mathf.Lerp(currentZoomPosition.x, targetZoomPosition.x, Time.deltaTime * zoomSpeed * 2),
+            Mathf.Lerp(currentZoomPosition.y, targetZoomPosition.y, Time.deltaTime * zoomSpeed * 2),
+            Mathf.Lerp(currentZoomPosition.z, targetZoomPosition.z, Time.deltaTime * zoomSpeed * 2));
 
         cam.localPosition = currentZoomPosition;
     }

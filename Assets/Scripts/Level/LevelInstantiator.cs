@@ -11,6 +11,7 @@ public static class LevelInstantiator
         int height = level.GetHeight();
         int zWidth = level.GetZWidth();
         float3 pos = float3.zero;
+        EntityID.ID id;
 
         for (int x = 0; x < xWidth; x++)
         {
@@ -18,10 +19,12 @@ public static class LevelInstantiator
             {
                 for (int y = 0; y < height; y++)
                 {
+                    id = level.Get(x, y, z);
+                    if (id == EntityID.ID._Empty) continue;
                     pos.x = x * cellWidth;
                     pos.y = y * cellHeight;
                     pos.z = z * cellWidth;
-                    EntityFactory.Instantiate(level.Get(x, y, z), pos);
+                    EntityFactory.Instantiate(id, pos);
                 }
             }
         }
