@@ -9,7 +9,7 @@ public class S_HandleSnapsToEntityPosition : ComponentSystem
     {
         Entities.ForEach((
             Entity e,
-            ref C_SnapsToEntityPosition cSnaps,
+            ref C_Ability_SnapsToEntityPosition cSnaps,
             ref Translation cTrans) =>
         {
             if (EntityManager.Exists(cSnaps.entityToSnapTo))
@@ -18,7 +18,14 @@ public class S_HandleSnapsToEntityPosition : ComponentSystem
             }
             else
             {
-                EntityManager.RemoveComponent(e, typeof(C_SnapsToEntityPosition));
+                if (cSnaps.destroyOnParentLoss)
+                {
+                    EntityManager.DestroyEntity(e);
+                }
+                else
+                {
+                    EntityManager.RemoveComponent(e, typeof(C_Ability_SnapsToEntityPosition));
+                }
             }
         });
     }

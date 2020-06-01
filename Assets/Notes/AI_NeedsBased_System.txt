@@ -1,0 +1,120 @@
+
+	AI Brains have the following elements:
+
+	Needs: Safety, Food, Sleep, Protect Allies, Duty, Relaxation, etc.
+	Heirarchy of Needs: Will tend to the highest order Need that requires attention: Survival > Community Survival > Job > Enjoyment
+		Needs may also have a variable percentage of satisfaction, and Weights can break the Heirarchy down to be more dynamic.
+		You may be at 80% survival with a weight of 100 but protecting a teammate is at 20% with a weight of 50.
+		Survival is at 80 x 100 = 8,000 points and Community Survival is at 20 x 50 = 1000 points, making Community Survival lower, and in more need of Satisfying.
+		This allows characters to be more Altruistic or Selfish, etc.
+	Requirements: Resources, states, and surroundings used to determine whether a Need is met, or how it can be met if it is not currently:
+		Food, Freedom from Danger, Killing enemies, Chopping wood, Relaxing by a garden, Talking to others, etc.
+		Requirements could be thought of as "meters" such as the meters in The Sims: Hunger, Enjoyment, Cleanliness, Fatigue, etc.
+	Methods: How an AI determines which capabilities to use in what way to meet Requirements
+	Action Capabilities: The physical capabilities that an AI has: Walking, Running, Attacking, Jumping, Talking, etc.
+	Availability: Whether or not requirements are possible for an AI to achieve at a given moment.
+		If a preferred method or need is not possible to satisfy, go to Plan B or satisfy the next Need if it makes sense to.
+
+	The AI takes these elements into consideration in order to determine their current Plan. Their Behavior flows from that Plan.
+
+	Loop through list of Needs in Heirarchy order, checking Requirements to calculate their score. The Need with the lowest score is attempted to be satisfied, if possible:
+	Loop through list of Methods to satisfy this Need in order and see if our Capabilities and Availability would allow us to use this Method to satisfy this Need. If not, Method B, Method C, etc.
+	This Method becomes the Plan. Their Behavior is an enactment of that Plan, using their Capabilities to carry out the Plan, and therefore the Method, and therefore satisfying that Need.
+
+	AI Behaviors = Plan = Method
+		Wander Aimlessly
+		Run to a Safer place
+		Attack an Enemy
+
+	AI Actions: The most basic component of AI, the real world application to that entity as a result of its decision.
+		Move to position (Result of move away from entity, move towards entity, or move to position)
+		Attack in direction
+		Jump
+		Pick up
+		Eat
+		Drop
+
+	Brain: Determine based on Needs and NeedSources, potentially with a slight bit of randomness, what Behavior to do and whether or not to change Behavior.
+	Need: Meters used to determine behavior, which can be modified by NeedSources and/or time (Safety, Hunger, Sleep)
+	NeedSource: Sources that could provide modify a need, either positive or negative (Food, Threat)
+	Scorers: Modifications to how much each NeedSource will modify the need score, such as urgency, distance, and energy required.
+		Polynomial curves should be considered for needs.
+		Task batching should be considered, have resistance to changing behaviors that decreases over time.
+	Behavior: Determine actions to achieve a goal (Wander, MoveToAndAttack, RunAwayFrom)
+	Action: Byte sized real world actions as result of behavior (MoveToPosition, MoveToEntity, Jump, AttackInDirection)
+
+
+	// Data
+
+	enum AIAction { MoveTo, Attack, Jump, Pickup, Eat}
+	C_IsControlledByAI: enum AIAction currentAction, enum AIBehavior currentBehavior, float3 target, Entity target
+	C_HasNeed_Food
+	C_HasNeed_Safety
+	C_IsNeedSource_Food
+	C_IsNeedSource_Threat
+
+
+	// Logic
+
+	Need Meter Timer (per each C_HasNeed type): Decrease need scores by an amount over time
+	Gather Environment Information (only collect sources that are relevant to our C_HasNeeds): Scan for need sources nearby
+		returns NeedSource nearbySources[]
+	Weigh Needs (compare all C_HasNeeds): Based on need scores and sources, determine which need source to interact with, if there is no sources that we want to interact with, resort to idle behavior
+		returns NeedSource entity: set C_PerformsAIAction targetEntity
+	Determine Behavior: Based on target need source, determine behavior to enact, ex: When target source is Threat, decide whether to run or attack
+	Determine Action: Scan area to determine which Action to issue
+		return targetPos if needed and AIAction: set C_PerformsAIAction data
+	Perform Action (switch on C_PerformsAIAction enum AIAction to AI scripts)
+	Terminate Action if can't continue (path becomes blocked and isn't moving, target entity is destroyed or out of range, etc)
+	Determine Next Action
+
+
+
+	
+
+
+
+
+
+	Brain: Determine a behavior. Start simple at first, can be upgraded later.
+	Behavior: A direct command from the above layer, the behavior does not care about needs, it just acts on its job until told to do otherwise. It is a blindly loyal executor.
+	Action: The lowest bit of AI - move to a position, move towards an entity, jump, attack in direction, etc. Behaviors create and change actions when necessary. Actions only send a message up if they have completed their job or are impeded.
+
+    C_AIBrain and S_AIBrain determine whether to continue current behavior or terminate and initialize a new behavior (for now: scan for nearby entities, choose closest enemy, either run or attack)
+		public enum currentBehavior
+    C_AIBehavior_Wander and S_AIBehavior_Wander hold current behavior states and determine whether to continue current action or terminate and initialize a new action
+		public bool isStateMoving (where to determine an entities wander speed and delays?)
+    C_AIAction_MoveTowardsEntity and S_AIAction_MoveTowardsEntity act, and if the action is completed or impeded, tells the AIBrain that the AIBehavior should determine a new action
+		public Entity targetEntity, public float3 targetPosition, public float speed
+
+	AI Actions may be too small to warrant an Action, these are literally just one line commands to other existing components. Behaviors are simple enough that they should be able to handle it and be the lowest level AI.
+
+	Pathfinding should be able to navigate around obstacles (A*) and jump up and down ledges to get to where its going
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	// Old
+		Comp_AIControlsBehavior
+		Sys_AIChooseBehavior: Allows entities with Comp_AIControlsBehavior to add or remove Behavior Components
+
+		Comp_AIBehavior_Wander { float moveSpeedMod, float2 pauseTimeRange, float2 moveTimeRange }
+		Comp_AIBehavior_RunToSafety { float moveSpeedMod, float3 targetPos}
+		Comp_AIBehavior_Attack { float moveSpeedMod, Entity target }
+
+		Sys_AIBehavior_Wander
+		Sys_AIBehavior_RunToSafety
+		Sys_AIBehavior_Attack
+
+		Comp_AIDetectsThreat { float bravery, float detectedThreat }
+		Comp_Threatens	{ float threatValue }

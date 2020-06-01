@@ -2,11 +2,15 @@
 // A library of generic entity and component constructors are included here to help simplify entity construction.
 // To add a new EntityID: Add an enum entry and a switch case.
 
+// TODO: Convert to blueprint / element / dependency system
+
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
+using BoxCollider = Unity.Physics.BoxCollider;
+using CapsuleCollider = Unity.Physics.CapsuleCollider;
 using Color = UnityEngine.Color;
 using PhysicsMaterial = Unity.Physics.Material;
 
@@ -18,7 +22,9 @@ public static class EntityID
         CharacterGoblin,
         CharacterPlayer,
         ItemApple,
+        ItemTurnip,
         TerrainGrass,
+        Tree
     }
 }
 
@@ -29,7 +35,7 @@ public static class EntityFactory
     public static Entity Instantiate(EntityID.ID id, float3 pos)
     {
         Entity e = m.CreateEntity();
-        m.SetName(e, id.ToString());
+        //m.SetName(e, id.ToString());
 
         switch (id)
         {
@@ -38,7 +44,9 @@ public static class EntityFactory
             case EntityID.ID.CharacterGoblin: ConstructCharacter(e, pos, Resource.Mat.GoblinGreen, 125f, 0); break;
             case EntityID.ID.CharacterPlayer: ConstructCharacter(e, pos, Resource.Mat.HumanBald, 150f, 1); break;
             case EntityID.ID.ItemApple: ConstructItem(e, pos, Resource.Mat.Apple); break;
+            case EntityID.ID.ItemTurnip: ConstructItem(e, pos, Resource.Mat.Turnip); break;
             case EntityID.ID.TerrainGrass: ConstructTerrain(e, id, pos, Resource.Mat.Grass); break;
+            case EntityID.ID.Tree: ConstructTree(e, id, pos); break;
 
             default: break;
         }
@@ -49,38 +57,44 @@ public static class EntityFactory
     #region Collision Filters
     private enum CollisionLayer
     {
-        Solid = 1 << 0,
-        Character = 1 << 1,
-        DamageTrigger = 1 << 2,
-        Item = 1 << 3,
-        ItemTrigger = 1 << 4
+        SolidEnvironment = 1 << 0,
+        SolidBodyCharacter = 1 << 1,
+        SolidBodyItem = 1 << 2,
+        DamageTrigger = 1 << 3,
+        ScanTrigger = 1 << 4,
+        BodyTrigger = 1 << 5
     }
 
     private static CollisionFilter
-        filterSolid = new CollisionFilter()
+        filterSolidEnvironment = new CollisionFilter()
         {
-            BelongsTo = (uint)(CollisionLayer.Solid),
-            CollidesWith = (uint)(CollisionLayer.Character | CollisionLayer.Item)
+            BelongsTo = (uint)(CollisionLayer.SolidEnvironment),
+            CollidesWith = (uint)(CollisionLayer.SolidBodyCharacter | CollisionLayer.SolidBodyItem)
         },
-        filterCharacter = new CollisionFilter()
+        filterSolidBodyCharacter = new CollisionFilter()
         {
-            BelongsTo = (uint)(CollisionLayer.Character),
-            CollidesWith = (uint)(CollisionLayer.Solid | CollisionLayer.ItemTrigger | CollisionLayer.Character | CollisionLayer.DamageTrigger)
+            BelongsTo = (uint)(CollisionLayer.SolidBodyCharacter),
+            CollidesWith = (uint)(CollisionLayer.SolidEnvironment | CollisionLayer.BodyTrigger | CollisionLayer.SolidBodyCharacter | CollisionLayer.DamageTrigger)
+        },
+        filterSolidBodyItem = new CollisionFilter()
+        {
+            BelongsTo =     (uint)(CollisionLayer.SolidBodyItem),
+            CollidesWith =  (uint)(CollisionLayer.SolidEnvironment | CollisionLayer.SolidBodyItem | CollisionLayer.DamageTrigger)
         },
         filterDamageTrigger = new CollisionFilter()
         {
             BelongsTo = (uint)(CollisionLayer.DamageTrigger),
-            CollidesWith = (uint)(CollisionLayer.Character | CollisionLayer.Item)
+            CollidesWith = (uint)(CollisionLayer.SolidBodyCharacter | CollisionLayer.SolidBodyItem)
         },
-        filterItem = new CollisionFilter()
+        filterScanTrigger = new CollisionFilter()
         {
-            BelongsTo =     (uint)(CollisionLayer.Item),
-            CollidesWith =  (uint)(CollisionLayer.Solid | CollisionLayer.Item | CollisionLayer.DamageTrigger)
+            BelongsTo = (uint)(CollisionLayer.ScanTrigger),
+            CollidesWith = (uint)(CollisionLayer.BodyTrigger)
         },
-        filterItemTrigger = new CollisionFilter()
+        filterBodyTrigger = new CollisionFilter()
         {
-            BelongsTo =     (uint)(CollisionLayer.ItemTrigger),
-            CollidesWith =  (uint)(CollisionLayer.Character)
+            BelongsTo =     (uint)(CollisionLayer.BodyTrigger),
+            CollidesWith =  (uint)(CollisionLayer.SolidBodyCharacter | CollisionLayer.ScanTrigger)
         };
     #endregion
 
@@ -90,39 +104,49 @@ public static class EntityFactory
     {
         AddTransform(e, pos + new float3(0f, 0.15f, 0f));
 
-        //PhysicsCollider collider = CreateColliderCapsule(0.3f, 0.5f, 0.3f, filterCharacter, CreatePhysicsMaterial(0f, 0f, false));
-        PhysicsCollider collider = CreateMeshCollider(Resource.Mesh.Cylinder, new float3(0.6f, 1f, 0.6f), filterCharacter, CreatePhysicsMaterial(0f, 0f, false));
-        m.AddComponentData(e, collider);
-        AddMass(e, collider);
-
-        m.AddComponentData(e, new PhysicsVelocity());
-        m.AddComponentData(e, new C_ControlsMovement { speed = speed });
-        m.AddComponentData(e, new C_CanJump { power = 400f });
-        m.AddComponentData(e, new C_HasVerticalMovement() );
-        m.AddComponentData(e, new C_HasGravity());
-
-        m.AddComponentData(e, new C_CanHold());
-        m.AddComponentData(e, new C_CanAttack());
-
-        m.AddComponentData(e, new C_TakesDamage { health = 2f });
-        m.AddComponentData(e, new C_CanDie { deathTimer = 0.15f });
-        m.AddComponentData(e, new C_ReactsToForce { forceResistanceFactor = 1f });
-
+        // Graphics and Animation
         AddBillboard(e, material, true);
         AddAnimation(e, UVAnimation.Anim.Character_Stand, 10f, false);
+        DynamicBuffer<C_BufferElement_EntityAnimation> dynamicBuffer = m.AddBuffer<C_BufferElement_EntityAnimation>(e);
+        dynamicBuffer.Add(new C_BufferElement_EntityAnimation { anim = UVAnimation.Anim.Character_Attack,   speed = 8f, priority = 40, determiner = AnimationStateDeterminer.IsAttacking });
+        dynamicBuffer.Add(new C_BufferElement_EntityAnimation { anim = UVAnimation.Anim.Character_Fall,     speed = 8f, priority = 20, determiner = AnimationStateDeterminer.IsFalling });
+        dynamicBuffer.Add(new C_BufferElement_EntityAnimation { anim = UVAnimation.Anim.Character_Hurt,     speed = 8f, priority = 30, determiner = AnimationStateDeterminer.IsHurt });
+        dynamicBuffer.Add(new C_BufferElement_EntityAnimation { anim = UVAnimation.Anim.Character_Jump,     speed = 8f, priority = 21, determiner = AnimationStateDeterminer.IsRising });
+        dynamicBuffer.Add(new C_BufferElement_EntityAnimation { anim = UVAnimation.Anim.Character_Stand,    speed = 6f, priority = 00, determiner = AnimationStateDeterminer.Default });
+        dynamicBuffer.Add(new C_BufferElement_EntityAnimation { anim = UVAnimation.Anim.Character_Walk,     speed = 8f, priority = 10, determiner = AnimationStateDeterminer.IsControllingLateralMovement });
 
+        // Colliders
+        PhysicsCollider triggerCollider = CreateMeshCollider(Resource.Mesh.Cylinder, 1f, filterBodyTrigger, CreatePhysicsMaterial(0f, 0f, true));
+        PhysicsCollider bodyCollider = CreateMeshCollider(Resource.Mesh.Cylinder, new float3(0.5f, 1f, 0.5f), filterSolidBodyCharacter, CreatePhysicsMaterial(0f, 0f, false));
+        m.AddComponentData(e, CreateCompoundCollider(triggerCollider, bodyCollider));
+        AddMass(e, bodyCollider);
+
+        // Movement
+        m.AddComponentData(e, new PhysicsVelocity());
+        m.AddComponentData(e, new C_Ability_CanControlLateralMovement { speed = speed });
+        m.AddComponentData(e, new C_Ability_CanJump { power = 400f });
+        m.AddComponentData(e, new C_Ability_CanMoveVertically() );
+        m.AddComponentData(e, new C_Ability_AffectedByGravity());
+
+        // Abilities
+        m.AddComponentData(e, new C_Ability_CanHold());
+        m.AddComponentData(e, new C_Ability_CanAttack());
+        m.AddComponentData(e, new C_Ability_CanDie { deathTimer = 0.15f });
+        m.AddComponentData(e, new C_Ability_CanReactToForce { forceResistanceFactor = 1f });
+
+        // Control
         if (playerID > 0)
         {
-            m.AddComponentData(e, new C_IsControlledByPlayer { playerID = playerID });
+            m.AddComponentData(e, new C_Controller_Player { playerID = playerID });
             m.AddComponentData(e, new C_IsFollowedByCamera());
+            m.AddComponentData(e, new C_Ability_CanTakeDamage { health = 50f });
+            m.AddComponentData(e, new C_Ability_CanBeScannedByAI());
         }
         else
         {
-            m.AddComponentData(e, new C_IsControlledByAI_Wander
-            {
-                pauseTimeRange = new float2(1f, 2f),
-                moveTimeRange = new float2(2f, 3f)
-            });
+            m.AddComponentData(e, new C_Controller_AI { idleBehavior = AIBehavior.Wander, reactionBehavior = AIBehavior.ChaseAndAttackEntity });
+            m.AddComponentData(e, new C_Ability_CanTakeDamage { health = 3f });
+            InstantiateScanEntity(e);
         }
     }
 
@@ -132,19 +156,17 @@ public static class EntityFactory
         AddBillboard(e, material, false);
         AddAnimation(e, UVAnimation.Anim.Character_Walk, 5f, false);
 
-        m.AddComponentData(e, new C_CanBeHeld());
-        m.AddComponentData(e, new C_ReactsToForce { forceResistanceFactor = 0.5f });
+        m.AddComponentData(e, new C_Ability_CanBeHeld());
+        m.AddComponentData(e, new C_Ability_CanReactToForce { forceResistanceFactor = 0.5f });
 
-        //PhysicsCollider triggerCollider  = CreateColliderCapsule(0.3f, 0.3f, 0.5f, filterItemTrigger, CreatePhysicsMaterial(0f, 0f, true));
-        //PhysicsCollider itemBodyCollider = CreateColliderCapsule(0.3f, 0.3f, 0.3f, filterItem, CreatePhysicsMaterial(0.3f, 0f, false)); // Friction no longer matters..
-        PhysicsCollider triggerCollider  = CreateMeshCollider(Resource.Mesh.Cylinder, 1f, filterItemTrigger, CreatePhysicsMaterial(0f, 0f, true));
-        PhysicsCollider itemBodyCollider = CreateMeshCollider(Resource.Mesh.Cylinder, 0.5f, filterItem, CreatePhysicsMaterial(0f, 0f, false));
+        PhysicsCollider triggerCollider  = CreateMeshCollider(Resource.Mesh.Cylinder, 1f, filterBodyTrigger, CreatePhysicsMaterial(0f, 0f, true));
+        PhysicsCollider itemBodyCollider = CreateMeshCollider(Resource.Mesh.Cylinder, 0.5f, filterSolidBodyItem, CreatePhysicsMaterial(0f, 0f, false));
         m.AddComponentData(e, CreateCompoundCollider(triggerCollider, itemBodyCollider));
 
         AddMass(e, itemBodyCollider);
         m.AddComponentData(e, new PhysicsVelocity());
-        m.AddComponentData(e, new C_HasVerticalMovement());
-        m.AddComponentData(e, new C_HasGravity());
+        m.AddComponentData(e, new C_Ability_CanMoveVertically());
+        m.AddComponentData(e, new C_Ability_AffectedByGravity());
     }
 
     private static void ConstructTerrain(Entity e, EntityID.ID id, float3 pos, Resource.Mat material)
@@ -153,11 +175,21 @@ public static class EntityFactory
 
         // FIXME: Position in Leveldata should be set directly from Level instead of from world space instantiation position.
         m.AddComponentData(e, new C_LevelData { id = id, x = (int)pos.x, y = (int)(pos.y * 2), z = (int)pos.z });
-        m.AddComponentData(e, new C_ConnectsToNeighbors());
-        m.AddComponentData(e, new C_IsAwaitingTerrainMeshRefresh());
+        m.AddComponentData(e, new C_Ability_CanConnectMeshToNeighbors());
+        m.AddComponentData(e, new C_State_IsAwaitingNeighborMeshRefresh());
 
         AddMesh(e, Resource.Mesh.Slab, material);
-        m.AddComponentData(e, CreateBoxCollider(1f, 0.5f, 1f, 0f, 0.25f, 0f, filterSolid, CreatePhysicsMaterial(0f, 0f, false))); 
+        m.AddComponentData(e, CreateBoxCollider(1f, 0.5f, 1f, 0f, 0.25f, 0f, filterSolidEnvironment, CreatePhysicsMaterial(0f, 0f, false))); 
+    }
+
+    private static void ConstructTree(Entity e, EntityID.ID id, float3 pos)
+    {
+        AddTransform(e, pos);
+
+        m.AddComponentData(e, new C_LevelData { id = id, x = (int)pos.x, y = (int)(pos.y * 2), z = (int)pos.z });
+
+        AddMesh(e, Resource.Mesh.Tree, Resource.Mat.Tree);
+        m.AddComponentData(e, CreateMeshCollider(Resource.Mesh.Cylinder, new float3(3f, 3f, 3f), filterSolidEnvironment, CreatePhysicsMaterial(0f, 0f, false)));
     }
 
     #endregion
@@ -169,14 +201,8 @@ public static class EntityFactory
         m.AddComponentData(e, new LocalToWorld());
         m.AddComponentData(e, new Translation { Value = pos });
         m.AddComponentData(e, new Rotation { Value = quaternion.identity });
-        m.AddComponentData(e, new C_FacesDirection { normalizedLateralDir = new float3(1f, 0f, 0f) });
+        m.AddComponentData(e, new C_Ability_FacesDirection { normalizedLateralDir = new float3(1f, 0f, 0f) });
     }
-
-    //private static void AddParent(Entity e, Entity parent)
-    //{
-        //m.AddComponentData(e, new Parent { Value = parent });
-        //m.AddComponentData(e, new LocalToParent());
-    //}
 
     private static void AddMesh(Entity e, Resource.Mesh mesh, Resource.Mat material)
     {
@@ -191,7 +217,7 @@ public static class EntityFactory
 
     private static void AddBillboard(Entity e, Resource.Mat material, bool flipTextureFacing)
     {
-        AddMesh(e, Resource.Mesh.BillboardQuad, material);
+        AddMesh(e, Resource.Mesh.QuadBillboard, material);
         m.AddComponentData(e, new C_IsBillboarded
         {
             flipTexureFacing = flipTextureFacing,
@@ -216,7 +242,7 @@ public static class EntityFactory
             Center = new float3(centerX, centerY, centerZ),
             Orientation = quaternion.identity,
             Size = new float3(sizeX, sizeY, sizeZ),
-            //BevelRadius = 0.05f
+            BevelRadius = 0.05f
         };
 
         return new PhysicsCollider { Value = BoxCollider.Create(boxGeo, filter, physicsMaterial) };
@@ -285,22 +311,22 @@ public static class EntityFactory
 
     #endregion
 
-    #region Effects
+    #region Effects / Misc
 
     // TODO: How to better handle instantiating effects?
     public static Entity InstantiateEffectSwipe(Entity originator, float3 pos, quaternion rotation)
     {
         Entity e = m.CreateEntity();
-        m.SetName(e, "EffectSwipe");
+        //m.SetName(e, "EffectSwipe");
 
         AddTransform(e, pos);
         m.SetComponentData(e, new Rotation { Value = rotation });
-        AddMesh(e, Resource.Mesh.BillboardQuad, Resource.Mat.EffectSwipe);
+        AddMesh(e, Resource.Mesh.QuadFlat, Resource.Mat.EffectSwipe);
 
-        m.AddComponentData(e, CreateBoxCollider(1f, 1f, 0.1f, 0f, 0.5f, 0f, filterDamageTrigger, CreatePhysicsMaterial(0f, 0f, true)));
-        m.AddComponentData(e, new C_InflictsDamage { damage = 1f, originator = originator, invulnerableTime = 0.06f } );
-        m.AddComponentData(e, new C_AppliesForce { force = 1000f, originator = originator, forceTime = 0.15f });
-        m.AddComponentData(e, new C_IsDestroyedAfterTimer { timer = 0.05f });
+        m.AddComponentData(e, CreateBoxCollider(1.1f, 0.25f, 1.1f, 0f, 0f, 0.5f, filterDamageTrigger, CreatePhysicsMaterial(0f, 0f, true)));
+        m.AddComponentData(e, new C_Ability_CanInflictDamage { damage = 1f, originator = originator, invulnerableTime = 0.14f } );
+        m.AddComponentData(e, new C_Ability_CanApplyForce { force = 1000f, originator = originator, forceTime = 0.15f });
+        m.AddComponentData(e, new C_State_IsDestroyedAfterTimer { timer = 0.05f });
 
         return e;
     }
@@ -308,14 +334,28 @@ public static class EntityFactory
     public static Entity InstantiateEffectDeath(Entity dyingEntity)
     {
         Entity e = m.CreateEntity();
-        m.SetName(e, "EffectDeath");
+        //m.SetName(e, "EffectDeath");
 
         AddTransform(e, float3.zero);
-        m.AddComponentData(e, new C_SnapsToEntityPosition { entityToSnapTo = dyingEntity, offset = new float3(0f, -0.4f, 0f) });
+        m.AddComponentData(e, new C_Ability_SnapsToEntityPosition { entityToSnapTo = dyingEntity, offset = new float3(0f, -0.4f, 0f) });
         AddBillboard(e, Resource.Mat.EffectDeath, false);
         AddAnimation(e, UVAnimation.Anim.Effect_Death, 18f, true);
 
         return e;
+    }
+
+    private static Entity InstantiateScanEntity(Entity parent)
+    {
+        Entity scanEntity = m.CreateEntity();
+        //m.SetName(scanEntity, "ScanEntity");
+        AddTransform(scanEntity, 0f);
+
+        m.AddBuffer<C_BufferElement_ScannedEntity>(scanEntity);
+        m.AddComponentData(scanEntity, new C_Ability_CanScanForEntities());
+        m.AddComponentData(scanEntity, CreateCapsuleCollider(0f, 0f, 6f, filterScanTrigger, CreatePhysicsMaterial(0f, 0f, true)));
+        m.AddComponentData(scanEntity, new C_Ability_SnapsToEntityPosition { entityToSnapTo = parent, destroyOnParentLoss = true });
+
+        return scanEntity;
     }
 
     #endregion

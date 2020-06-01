@@ -13,14 +13,14 @@ public class Resource
         EffectDeath,
         EffectSwipe,
         Grass,
-        GoblinBlue,
         GoblinGreen,
-        HumanBald
+        HumanBald,
+        Turnip,
+        Tree
     }
 
     public enum Mesh
     {
-        BillboardQuad,
         Block_Edge,
         Block_Lane,
         Block_Mid,
@@ -28,7 +28,10 @@ public class Resource
         Block_RoundEnd,
         Block_RoundLone,
         Cylinder,
-        Slab
+        QuadBillboard,
+        QuadFlat,
+        Slab,
+        Tree
     }
 
     private static bool showLog = false;

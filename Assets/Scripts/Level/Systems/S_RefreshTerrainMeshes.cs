@@ -28,10 +28,10 @@ public class S_RefreshTerrainMeshes : ComponentSystem
             ref C_LevelData cLevelData,
             ref C_HasMesh cMesh,
             ref Rotation cRotation,
-            ref C_ConnectsToNeighbors cConnects,
-            ref C_IsAwaitingTerrainMeshRefresh cAwaits) =>
+            ref C_Ability_CanConnectMeshToNeighbors cConnects,
+            ref C_State_IsAwaitingNeighborMeshRefresh cAwaits) =>
         {
-            PostUpdateCommands.RemoveComponent<C_IsAwaitingTerrainMeshRefresh>(entity);
+            PostUpdateCommands.RemoveComponent<C_State_IsAwaitingNeighborMeshRefresh>(entity);
 
             x = cLevelData.x;
             y = cLevelData.y;
